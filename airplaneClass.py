@@ -9,13 +9,12 @@ class Airplane:
         self.hexID = hexID
         self.altitude = []
         self.clock = []
-        self.position = []
         self.speed = []
         self.latitude = []
-        self.longitute = []
+        self.longitude = []
 
     def setHexID(self, x):
-        self._hexID = x
+        self.hexID = x
 
     def getHexID(self):
         return self.hexID
@@ -31,9 +30,6 @@ class Airplane:
 
     def getClock(self):
         return self.clock
-
-    def setPosition(self, x):
-        self.position.append(x)
 
     def getPosition(self):
         return self.position
@@ -51,7 +47,8 @@ class Airplane:
         return self.latitude
 
     def setLongitude(self, x):
-        self.longitute.append(x)
+        self.longitude.append(x)
 
     def getLongitude(self):
-        return self.longitute
+        return self.longitude
+
