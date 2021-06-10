@@ -17,13 +17,45 @@ REF_LONGITUDE = -84.09
 REF_EARTH_CIRCUM = 24981.91
 
 
-def plotSingularPlane(latitudeList, longitudeList):
+def plotSingularPlane(hexID, latitudeList, longitudeList):
     # Math to calculate distance in miles from latitude and longitude
 
+    differenceLatitudeList, differenceLongitudeList = normalizeAirplaneDistance(latitudeList, longitudeList)
+    radiusList, degreesList = rectangularToPolarConverter(differenceLatitudeList, differenceLongitudeList)
+
+    # Plotting
+    r = radiusList
+    theta = np.deg2rad(degreesList)
+
+    # Compute areas and colors
+    ax = plt.subplot(projection='polar')
+    # ax.plot(r, theta)
+    plt.scatter(theta, r)
+    ax.set_rlabel_position(0)
+    ax.grid(True)
+    plt.title("Plot of Singular Aircraft Path HEXID: " + str(hexID))
+    plt.show()
+
+
+def plotMultipleAirplane(airplaneList):
+    ax = plt.subplot(projection='polar')
+
+    for plane in airplaneList:
+        differenceLatitudeList, differenceLongitudeList = normalizeAirplaneDistance(plane.getLatitude(),
+                                                                                    plane.getLongitude())
+        radiusList, degreesList = rectangularToPolarConverter(differenceLatitudeList, differenceLongitudeList)
+
+        r = radiusList
+        theta = np.deg2rad(degreesList)
+        plt.scatter(theta, r, c='b', marker='s', label=str(plane.getHexID()))
+
+    plt.legend(loc='best')
+    plt.show()
+
+
+def normalizeAirplaneDistance(latitudeList, longitudeList):
     differenceLatitudeList = []
     differenceLongitudeList = []
-    degreesList = []
-    radiusList = []
 
     for lat in latitudeList:
         newLat = differenceLatitudeCalculator(lat)
@@ -33,22 +65,7 @@ def plotSingularPlane(latitudeList, longitudeList):
         newLong = differenceLongitudeCalculator(long)
         differenceLongitudeList.append(newLong)
 
-    degreesList, radiusList = rectangularToPolarConverter(differenceLatitudeList, differenceLongitudeList)
-
-    # Fixing random state for reproducibility
-    np.random.seed(19680801)
-
-    # Compute areas and colors
-    N = 150
-    r = radiusList
-    theta = degreesList
-    area = 500
-    colors = theta
-
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='polar')
-    c = ax.scatter(theta, r, c=colors, s=area, cmap='hsv', alpha=0.75)
-    plt.show()
+    return differenceLatitudeList, differenceLongitudeList
 
 
 def differenceLatitudeCalculator(singleLatitude):
@@ -67,7 +84,6 @@ def rectangularToPolarConverter(latitudeList, longitudeList):
     radiusList = []
 
     # Calculate the radius w/ distance formula
-
     indexLong = 0
     for lat in latitudeList:
         r = m.sqrt(float(lat) ** 2 + float(longitudeList[indexLong]) ** 2)
@@ -76,7 +92,7 @@ def rectangularToPolarConverter(latitudeList, longitudeList):
 
     indexLong = 0
     for lat in latitudeList:
-        deg = math.degrees(math.atan(float(lat) / float(longitudeList[indexLong])))
+        deg = np.rad2deg(np.arctan2(float(lat), float(longitudeList[indexLong])))
         indexLong = indexLong + 1
         degreesList.append(deg)
 

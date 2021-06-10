@@ -13,8 +13,6 @@ seenAircraft = []
 aircraftObjects = []
 
 
-
-
 def readCSV(filename):
     with open(filename) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter='\t')
